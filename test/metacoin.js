@@ -1,4 +1,5 @@
 const MetaCoin = artifacts.require("MetaCoin");
+const HelloWorld = artifacts.require("HelloWorld");
 
 contract('MetaCoin', (accounts) => {
   it('should put 10000 MetaCoin in the first account', async () => {
@@ -36,5 +37,15 @@ contract('MetaCoin', (accounts) => {
 
     assert.equal(accountOneEndingBalance, accountOneStartingBalance - amount, "Amount wasn't correctly taken from the sender");
     assert.equal(accountTwoEndingBalance, accountTwoStartingBalance + amount, "Amount wasn't correctly sent to the receiver");
+  });
+
+  // Test HelloWorld.sol contract
+  it('greeting variable should be initialized to "Hello World!"', async () => {
+    // Wait for the contract to be deployed
+    const helloWorldInstance = await HelloWorld.deployed();
+    // Call getGreeting function
+    const greeting = await helloWorldInstance.getGreeting();
+    // Check the value is initialized.
+    assert.equal(greeting, "Hello World!", "String incorrectly initialized.");
   });
 });
