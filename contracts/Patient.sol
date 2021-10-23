@@ -31,9 +31,9 @@ contract Patient {
 
     // add a new patient
     function signupPatient(string memory _name, uint8 _age) public {
-
-        // make sure a patient with this addr doesn't already exist
+        // store msg.sender as a patient in memory
         patient memory p = patients[msg.sender];
+        // make sure a patient with this addr doesn't already exist
         require(!(p.addr > address(0x0)));
 
         // check to make sure the patient has a valid name and age
