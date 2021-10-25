@@ -10,6 +10,6 @@ contract('Service', (accounts) => {
     // 
     console.log("======================");
     console.log(typeof(accounts[0]));
-    assert.equal(tfile.receipt.from.toUpperCase(), accounts[0].toUpperCase());
+    assert.equal(tservice.receipt.from.toUpperCase(), accounts[0].toUpperCase());
   });
 });
