@@ -34,5 +34,4 @@ contract Service is Doctor, Patient, File {
 
         return (p.name, p.age, p.addr, p.files);
     }
-
 }
