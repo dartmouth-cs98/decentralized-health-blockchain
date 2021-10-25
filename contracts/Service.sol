@@ -11,8 +11,15 @@ contract Service is Doctor, Patient, File {
     // message sender
     address private owner;
     
+    // set owner
     constructor() public{
         owner = msg.sender;
+    }
+
+    // make sure that the sender is the owner
+    modifier onlyOwner() {
+        require(msg.sender == owner);
+        _;
     }
     
     // methods to implement: 
