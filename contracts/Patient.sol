@@ -30,7 +30,7 @@ contract Patient {
     }
 
     // add a new patient
-    function signupPatient(string memory _name, uint8 _age) public {
+    function signupPatient(string memory _name, uint8 _age) public returns(string memory, uint8, address, bytes32[] memory, address[] memory) {
         // store msg.sender as a patient in memory
         patient memory p = patients[msg.sender];
         // make sure a patient with this addr doesn't already exist
@@ -42,5 +42,6 @@ contract Patient {
 
         // add to patient dict
         patients[msg.sender] = patient({name:_name,age:_age,addr:msg.sender,files:new bytes32[](0),doctor_list:new address[](0)});
+        return (patients[msg.sender].name, patients[msg.sender].age, patients[msg.sender].addr, patients[msg.sender].files, patients[msg.sender].doctor_list);
     }
 }

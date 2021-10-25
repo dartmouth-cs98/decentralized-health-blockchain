@@ -1,13 +1,15 @@
 const Patient = artifacts.require("Patient");
 
 contract('Patient', (accounts) => {
-//   // Test HelloWorld.sol contract
-//   it('greeting variable should be initialized to "Hello World!"', async () => {
-//     // Wait for the contract to be deployed
-//     const helloWorldInstance = await HelloWorld.deployed();
-//     // Call getGreeting function
-//     const greeting = await helloWorldInstance.getGreeting();
-//     // Check the value is initialized.
-//     assert.equal(greeting, "Hello World!", "String incorrectly initialized.");
-//   });
+    // Test Patient.sol contract
+    it('creates a new patient by calling the signupPatient method', async () => {
+        // Wait for the contract to be deployed
+        const patientInstance = await Patient.deployed();
+        // Call signupGreeting function
+        const patient1 = await patientInstance.signupPatient('Dionysios Kotsonis', 12);
+        // 
+        console.log("======================");
+        console.log(typeof(accounts[0]));
+        assert.equal(patient1.receipt.from.toUpperCase(), accounts[0].toUpperCase());
+    });
 });
