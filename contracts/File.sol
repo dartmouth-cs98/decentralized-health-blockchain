@@ -12,7 +12,7 @@ contract File {
     }
 
     // method to test file contract
-    function testFile public view returns(string memory, string memory, address){
+    function testFile() public view returns(string memory, string memory, address[] memory){
         return ("blood test 1", "blood test",new address[](0));
     }
 
