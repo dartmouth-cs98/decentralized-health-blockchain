@@ -11,5 +11,5 @@ contract('Patient', (accounts) => {
         console.log("======================");
         console.log(typeof(accounts[0]));
         assert.equal(patient1.receipt.from.toUpperCase(), accounts[0].toUpperCase());
-    });
+    }); 
 });
