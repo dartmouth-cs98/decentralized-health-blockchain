@@ -12,8 +12,8 @@ contract File {
     }
 
     // method to test file contract
-    function testFile public view returns(file memory){
-        return file({file_name:"blood test 1", file_type:"blood test",uploader:new address[](0)})
+    function testFile public view returns(string memory, string memory, address){
+        return ("blood test 1", "blood test",new address[](0));
     }
 
     // make sure a file actually exists
