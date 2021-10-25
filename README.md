@@ -8,7 +8,7 @@
 - Doctor class: stores doctor name, id, and list of patient wallet addresses.
 - Patient class: stores name, age, id, file hashes, and list of doctor wallet addresses
 - File class: stores a dictionary that maps file hashes to file info objects. File info objects contain file name, record type, and the name of the doctor who uploaded the document.
-- Service smart contract
+- Service smart contract: inherits functionality from doctor, patient, and file classes. Used for all the wiring between them (getting patient info on the doctor side, adding new files, etc.)
 
 ## Testing
 - 
