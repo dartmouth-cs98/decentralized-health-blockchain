@@ -25,7 +25,7 @@ contract Patient {
 
     // test script for patient class
     function testPatient public view returns(patient memory){
-        return {name:"bob", age:18,addr:address(0x0),files:[],doctor_list:[]}
+        return patient({name:"bob", age:18,addr:address(0x0),files:[],doctor_list:[]})
     }
 
     // get info for a given patient (name, age, files, list of whitelisted doctors)
