@@ -9,6 +9,11 @@
 - Patient class: stores name, age, id, file hashes, and list of doctor wallet addresses
 - File class: stores a dictionary that maps file hashes to file info objects. File info objects contain file name, record type, and the name of the doctor who uploaded the document.
 
+## Testing
+- Added simple testing for Patient.sol contract - calling the signupPatient method to create a new patient instance, checking that the instance of the class exists and the correct address is calling the smart contract.
+- Added simple testing for Doctor.sol contract - calling the signupDoctor method to create a new patient instance, checking that the instance ofg the class exists and the correct address is calling the smart contract.
+- Added simple testing for Test.sol contract. We have written a method to test the deployment of the smart contract and verifying that the function returns parameters as expected.
+
 ### Current progress:
 We have initialized truffle, and have gotten tangible feedback from Ganache that the default metacoin contract went through. Following this, we wrote a HelloWorld.sol script that returns the string "Hello World!" when the method getGreeting() is called. To test this, we wrote a test script in metacoin.js, which, after checking that MetaCoin.sol was deployed properly, waits for the HelloWorld smart contract to be deployed, and then awaits the greeting and checks that it is actually "Hello World!". Our test case passed, so our HelloWorld has proper functionality.
 
