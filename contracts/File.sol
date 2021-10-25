@@ -11,6 +11,11 @@ contract File {
         address uploader;
     }
 
+    // method to test file contract
+    function testFile public view returns(file memory){
+        return {file_name:"blood test 1", file_type:"blood test",uploader:address(0x0)}
+    }
+
     // make sure a file actually exists
     modifier checkFile(bytes32 file_hash) {
         bytes memory file_check = bytes(fileHashDict[file_hash].file_name);
