@@ -23,6 +23,11 @@ contract Patient {
         _;
     }
 
+    // test script for patient class
+    function testPatient public view returns(patient memory){
+        return {name:"bob", age:18,addr:address(0x0),files:[],doctor_list:[]}
+    }
+
     // get info for a given patient (name, age, files, list of whitelisted doctors)
     function getPatientInfo() public view checkPatient(msg.sender) returns(string memory, uint8, bytes32[] memory, address[] memory) {
         patient memory p = patients[msg.sender];
