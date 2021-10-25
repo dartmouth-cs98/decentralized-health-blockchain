@@ -27,10 +27,10 @@ contract Service is Doctor, Patient, File {
     // want to have checks as well
 
     // allow doctor to get info about a specific patient
-    function getPatientInfoForDoctor(address patient) public view checkPatient(patient) checkDoctor(msg.sender) returns(string memory , uint8, address, bytes32[] memory ){
-        patient memory p = patients[patient];
+    function getPatientInfoForDoctor(address _patient) public view checkPatient(_patient) checkDoctor(msg.sender) returns(string memory , uint8, address, bytes32[] memory ){
+        patient memory p = patients[_patient];
 
-        require(patientToDoctor[patient][msg.sender] > 0);
+        require(patientToDoctor[_patient][msg.sender] > 0);
 
         return (p.name, p.age, p.addr, p.files);
     }
