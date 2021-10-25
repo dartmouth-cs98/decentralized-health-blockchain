@@ -21,6 +21,10 @@ contract Service is Doctor, Patient, File {
         require(msg.sender == owner);
         _;
     }
+
+    function testService() public view returns(address){
+        return msg.sender
+    }
     
     // methods to implement: 
     // give access to a doctor, add a file, get patient/doctor info from a file?
