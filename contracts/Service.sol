@@ -23,7 +23,7 @@ contract Service is Doctor, Patient, File {
     }
 
     function testService() public view returns(address){
-        return msg.sender
+        return msg.sender;
     }
     
     // methods to implement: 
