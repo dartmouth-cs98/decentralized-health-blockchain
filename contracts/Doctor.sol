@@ -11,11 +11,6 @@ contract Doctor {
         address addr;
         address[] patient_list;
     }
-    
-    // // test method for doctor class
-    // function testDoctor() public view returns(doctor memory){
-	// 	return doctor({name:"Dionysios Kotsonis",addr:address(0x0),patient_list:new address[](0)});
-	// }
 
     // check address is a valid doctor
     modifier checkDoctor(address addr) {

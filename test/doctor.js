@@ -11,5 +11,13 @@ contract('Doctor', (accounts) => {
     console.log("======================");
     console.log(typeof(accounts[0]));
     assert.equal(doctor1.receipt.from.toUpperCase(), accounts[0].toUpperCase());
+
+
+    // get doctor info and make sure it's correct (check doctor name and empty patient list)
+    const d = await doctorInstance.getDoctorInfo();
+    console.log(d);
+    assert.equal(d[0], 'Dionysios Kotsonis');
+    console.log(typeof(d[1]));
+    assert.equal(d[1], 0);
   });
 });
