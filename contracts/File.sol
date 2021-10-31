@@ -9,21 +9,22 @@ contract File {
         string file_name;
         string record_type;
         address uploader;
+        string contents;
     }
 
     // method to test file contract
-    function testFile(string memory _file_contents, string memory _file_name) public returns(bytes32, string memory){
-        // return ("blood test 1", "blood test",new address[](0));
+    function testFile(string memory _file_contents, string memory _file_name, string memory _contents) public returns(bytes32, string memory){
         bytes32 file_hash = keccak256(abi.encodePacked(_file_contents));
-        fileHashDict[file_hash] = file({file_name:_file_name,record_type:"blood test",uploader: address(0x0)});
+        fileHashDict[file_hash] = file({file_name:_file_name,record_type:"blood test",uploader:address(0x0),contents:_contents});
         return (file_hash, "Blood Test 1");
-        // fileHashDict[msg.sender] = file({name:_n, addr:msg.sender, patient_list:new address[](0)});
     }
 
+    // used for testing, get the hash of a file's contents
     function getFileHash(string memory file_contents) public view returns (bytes32) {
         return keccak256(abi.encodePacked(file_contents));
     }
 
+    // used for testing, get a file's name from the hash dictionary
     function getFileName(bytes32 file_hash) public view checkFile(file_hash) returns (string memory) {
         return fileHashDict[file_hash].file_name;
     }
@@ -35,7 +36,7 @@ contract File {
         _;
     }
 
-    // given a file hash, 
+    // given a file hash, get the file's name, type, and uploader
     function getFileInfo(bytes32 file_hash) internal view checkFile(file_hash) returns(file memory) {
         return fileHashDict[file_hash];
     }
