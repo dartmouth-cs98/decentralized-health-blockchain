@@ -40,26 +40,22 @@ contract Service is Doctor, Patient, File {
     }
 
     // method to grant a doctor access to a patient's record
-    function grantDoctorAccess(address _doctor, address _patient) public checkPatient(msg.sender) checkDoctor(msg.sender) {
+    function grantDoctorAccess(address _doctor_address, address _patient_address) public checkPatient(msg.sender) checkDoctor(msg.sender) {
         // get struct for patient and doctor
         patient storage p = patients[msg.sender];
-        doctor storage d = doctors[_doctor];
+        doctor storage d = doctors[_doctor_address];
         // check doctor does not already have access
-        require(patientToDoctor[msg.sender][_doctor] < 1);// this means doctor already been access
+        require(patientToDoctor[msg.sender][_doctor_address] < 1);// this means doctor already been access
         // get the index of doctor's position in patient's doctor_list
-        uint idx = p.doctor_list.push(_doctor);// new length of array
+        uint idx = p.doctor_list.push(_doctor_address);// new length of array
         // add doctor to patient's doctor list
-        patientToDoctor[msg.sender][_doctor] = idx;
+        patientToDoctor[msg.sender][_doctor_address] = idx;
         // add patient to doctor's patient list
         d.patient_list.push(msg.sender);
     }
     
     // method to add a file to patient's record
-
-    // check doctor exists, check patient exists, check doctor isn't already in patient's doctor list
-
-
-    
-
-
+    // get file info
+    // get patient info
+    // get doctor info
 }
