@@ -38,4 +38,20 @@ contract Service is Doctor, Patient, File {
 
         return (p.name, p.age, p.addr, p.files);
     }
+
+    // add a file to a patient's list
+    function addFile(string memory _file_name, string memory _file_type, bytes32 _file_hash, address _patient_addr, string memory _contents) public checkDoctor(msg.sender) {
+        
+        // get the patient
+        patient storage p = patients[_patient_addr];
+
+        // make sure the file doesn't already exist
+        require(patientToFile[_patient_addr][_file_hash] < 1);
+      
+        // add this file to the file hash dict and the patient's file list
+        fileHashDict[_file_hash] = file({file_name:_file_name, file_type:_file_type,uploader:msg.sender,contents:_contents});
+        uint pos = p.files.push(_file_hash);
+        // add the position in the file list to patientToFile mapping (avoid duplicates in future)
+        patientToFile[_patient_addr][_file_hash] = pos;
+    }
 }
