@@ -13,9 +13,9 @@ contract File {
     }
 
     // method to test file contract
-    function testFile(string memory _file_contents, string memory _file_name, string memory _contents) public returns(bytes32, string memory){
+    function testFile(string memory _file_contents, string memory _file_name) public returns(bytes32, string memory){
         bytes32 file_hash = keccak256(abi.encodePacked(_file_contents));
-        fileHashDict[file_hash] = file({file_name:_file_name,record_type:"blood test",uploader:address(0x0),contents:_contents});
+        fileHashDict[file_hash] = file({file_name:_file_name,record_type:"blood test",uploader:address(0x0),contents:_file_contents});
         return (file_hash, "Blood Test 1");
     }
 

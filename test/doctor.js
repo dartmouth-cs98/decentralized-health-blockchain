@@ -6,7 +6,7 @@ contract('Doctor', (accounts) => {
     // Wait for the contract to be deployed
     const doctorInstance = await Doctor.deployed();
     // Call signupGreeting function
-    const doctor1 = await doctorInstance.signupDoctor('Dionysios Kotsonis');
+    const doctor1 = await doctorInstance.signupDoctor('Dionysios Kotsonis', "MGH Boston");
     // 
     console.log("======================");
     console.log(typeof(accounts[0]));
