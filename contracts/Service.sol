@@ -56,6 +56,21 @@ contract Service is Doctor, Patient, File {
     
     // method to add a file to patient's record
     // get file info
+    // coming from patient file
+    // find patients file contents
+
+    // takes in patient and hash - file name, contents, type
+    function getFileInfo(address _patient_address, bytes32 _file_hash) public checkPatient(msg.sender) {
+        patient storage p = patients[_patient_address];
+        // get info using file_house
+        p.files
+        // somthing like this
+        uint idx = p.doctor_list.push(_doctor_address);// new length of array
+        // add doctor to patient's doctor list
+        patientToDoctor[msg.sender][_doctor_address] = idx;
+    }
+    
+
     // get patient info
     // get doctor info
 }
