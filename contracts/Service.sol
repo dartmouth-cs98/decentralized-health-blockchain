@@ -25,19 +25,6 @@ contract Service is Doctor, Patient, File {
     function testService() public view returns(address){
         return msg.sender;
     }
-    
-    // methods to implement: 
-    // give access to a doctor, add a file, get patient/doctor info from a file?
-    // want to have checks as well
-
-    // allow doctor to get info about a specific patient
-    function getPatientInfoForDoctor(address _patient) public view checkPatient(_patient) checkDoctor(msg.sender) returns(string memory , uint8, address, bytes32[] memory ){
-        patient memory p = patients[_patient];
-
-        require(patientToDoctor[_patient][msg.sender] > 0);
-
-        return (p.name, p.age, p.addr, p.files);
-    }
 
     // add a file to a patient's list
     function addFile(string memory _file_name, string memory _file_type, bytes32 _file_hash, address _patient_addr, string memory _contents) public checkDoctor(msg.sender) {
@@ -56,7 +43,7 @@ contract Service is Doctor, Patient, File {
     }
 
     // method to grant a doctor access to a patient's record
-    function grantDoctorAccess(address _doctor_address, address _patient_address) public checkPatient(msg.sender) checkDoctor(msg.sender) {
+    function grantDoctorAccess(address _doctor_address) public checkPatient(msg.sender) checkDoctor(msg.sender) {
         // get struct for patient and doctor
         patient storage p = patients[msg.sender];
         doctor storage d = doctors[_doctor_address];
@@ -70,11 +57,37 @@ contract Service is Doctor, Patient, File {
         d.patient_list.push(msg.sender);
     }
 
+
     // takes in patient address and file hash - returns: file name, contents, type
     function getFileInfo(address _patient_address, bytes32 _file_hash) public view checkPatient(msg.sender) returns (string memory, string memory, address, string memory) {
         patient storage p = patients[_patient_address];
         // get specified file from fileHashDict mapping
         file storage patient_file = fileHashDict[_file_hash];
         return (patient_file.file_name, patient_file.record_type, patient_file.uploader, patient_file.contents);
+
+    // function to get patient info (a doctor requests)
+    function getPatientInfoForDoctor(address _patient_requested) public view checkPatient(_patient_requested) checkDoctor(msg.sender) returns(string memory, uint8, bytes32[] memory){
+        
+        // get the patient from the patient list
+        patient memory p = patients[_patient_requested];
+
+        // make sure the patient actually exists in this doctor's care circle
+        require(patientToDoctor[_patient_requested][msg.sender] > 0);
+
+        // return the patient's name, age, and files
+        return (p.name, p.age, p.files);
+    }
+
+    // function to get doctor info (for a patient) -- will see how necessary this ends up being
+    function getDoctorInfoForPatient(address _doctor_requested) public view checkPatient(msg.sender) checkDoctor(_doctor_requested) returns(string memory, string memory){
+        
+        // get the doctor from the doctors list
+        doctor memory d = doctors[_doctor_requested];
+
+        // make sure the doctor actually exists
+        require(doctorToPatient[_doctor_requested][msg.sender] > 0);
+
+        return (d.name, d.clinic);
+
     }
 }

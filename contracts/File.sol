@@ -20,7 +20,7 @@ contract File {
     }
 
     // used for testing, get the hash of a file's contents
-    function getFileHash(string memory file_contents) public view returns (bytes32) {
+    function getFileHash(string memory file_contents) public pure returns (bytes32) {
         return keccak256(abi.encodePacked(file_contents));
     }
 
