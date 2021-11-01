@@ -49,7 +49,7 @@ contract Service is Doctor, Patient, File {
         require(patientToFile[_patient_addr][_file_hash] < 1);
       
         // add this file to the file hash dict and the patient's file list
-        fileHashDict[_file_hash] = file({file_name:_file_name, file_type:_file_type,uploader:msg.sender,contents:_contents});
+        fileHashDict[_file_hash] = file({file_name:_file_name, record_type:_file_type,uploader:msg.sender,contents:_contents});
         uint file_pos = pat.files.push(_file_hash);
         // add the position in the file list to patientToFile mapping (avoid duplicates in future)
         patientToFile[_patient_addr][_file_hash] = file_pos;
@@ -69,24 +69,12 @@ contract Service is Doctor, Patient, File {
         // add patient to doctor's patient list
         d.patient_list.push(msg.sender);
     }
-    
-    // method to add a file to patient's record
-    // get file info
-    // coming from patient file
-    // find patients file contents
 
-    // takes in patient and hash - file name, contents, type
-    function getFileInfo(address _patient_address, bytes32 _file_hash) public checkPatient(msg.sender) {
+    // takes in patient address and file hash - returns: file name, contents, type
+    function getFileInfo(address _patient_address, bytes32 _file_hash) public view checkPatient(msg.sender) returns (string memory, string memory, address, string memory) {
         patient storage p = patients[_patient_address];
-        // get info using file_house
-        p.files
-        // somthing like this
-        uint idx = p.doctor_list.push(_doctor_address);// new length of array
-        // add doctor to patient's doctor list
-        patientToDoctor[msg.sender][_doctor_address] = idx;
+        // get specified file from fileHashDict mapping
+        file storage patient_file = fileHashDict[_file_hash];
+        return (patient_file.file_name, patient_file.record_type, patient_file.uploader, patient_file.contents);
     }
-    
-
-    // get patient info
-    // get doctor info
 }
