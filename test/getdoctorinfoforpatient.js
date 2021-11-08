@@ -1,6 +1,6 @@
 const Service = artifacts.require("Service");
 
-contract('GetPatientInfoForDoctor', (accounts) => {
+contract('GetDoctorInfoForPatient', (accounts) => {
 
     // create doctor contract
     it('creates new service contract, creates doctor and patient, and tests test getPatientInfoForDoctor', async () => {
@@ -12,9 +12,15 @@ contract('GetPatientInfoForDoctor', (accounts) => {
         const patient = await serviceInstance.signupPatient('Kevin Cai', 12);
         console.log("=========DOCTOR=======")
         console.log(doctor);
+
+        // get doctor info
+        const d = await serviceInstance.getDoctorInfo();
+
+        // give patient access to this doctor
+        const x = await serviceInstance.grantDoctorAccess(d[2]);
         
         // call getPatientInforForDoctor function
-        const doctorInfo = await serviceInstance.getDoctorInfoForPatient(doctor.receipt.from);
+        const doctorInfo = await serviceInstance.getDoctorInfoForPatient(d[2]);
         console.log("=======DOCTOR INFO======");
         console.log(doctorInfo);
         assert.equal(doctorInfo[0], "Dionysios Kotsonis");
