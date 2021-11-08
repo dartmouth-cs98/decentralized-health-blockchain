@@ -13,6 +13,7 @@ contract('TestAccess', (accounts) => {
         // 
         console.log("======================");
         console.log(doctor);
+        console.log(patient);
         assert.equal(patient.receipt.from.toUpperCase(), accounts[0].toUpperCase());
 
         // get doctor info and make sure it's correct (check doctor name and empty patient list)
