@@ -175,11 +175,12 @@ contract Service {
         // check doctor does not already have access
         require(patientToDoctor[msg.sender][_doctor_address] < 1);// this means doctor already been access
         // get the index of doctor's position in patient's doctor_list
-        uint idx = p.doctor_list.push(_doctor_address);// new length of array
+        uint idx1 = p.doctor_list.push(_doctor_address);// new length of array
         // add doctor to patient's doctor list
-        patientToDoctor[msg.sender][_doctor_address] = idx;
-        // add patient to doctor's patient list
-        d.patient_list.push(msg.sender);
+        patientToDoctor[msg.sender][_doctor_address] = idx1;
+        // add patient to doctor's patient list and to the doctortopatient mapping
+        uint idx2 = d.patient_list.push(msg.sender);
+        doctorToPatient[_doctor_address][msg.sender] = idx2;
     }
 
     // function to get patient info (a doctor requests)
