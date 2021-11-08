@@ -4,22 +4,22 @@
   "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"project:/contracts/DecentralizedRecords.sol\":\"DecentralizedRecords\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/DecentralizedRecords.sol\":{\"keccak256\":\"0x585427dfe0ab46ad49a40cf8368ba7ff626552f8b92021f18d74b1e22250c844\",\"urls\":[\"bzz-raw://f2c024381a388d04b35fd8b32c7c71998605780fc4a7a6d4c6d05e7c21f4ac61\",\"dweb:/ipfs/QmaqgWJt2z6kifzZp2VuPxxdzRpXaciShn9XdcFCP37oVf\"]}},\"version\":1}",
   "bytecode": "0x6080604052348015600f57600080fd5b50603e80601d6000396000f3fe6080604052600080fdfea265627a7a723158204b64eacd9fe6896be90f2875adb189940a7649195d9fd2391977a5c76fe21d4d64736f6c63430005100032",
   "deployedBytecode": "0x6080604052600080fdfea265627a7a723158204b64eacd9fe6896be90f2875adb189940a7649195d9fd2391977a5c76fe21d4d64736f6c63430005100032",
-  "sourceMap": "110:223:1:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;110:223:1;;;;;;;",
-  "deployedSourceMap": "110:223:1:-;;;;;",
+  "sourceMap": "110:223:0:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;110:223:0;;;;;;;",
+  "deployedSourceMap": "110:223:0:-;;;;;",
   "source": "pragma solidity >=0.4.25 <0.7.0;\n//pragma experimental ABIEncoderV2;\n\n// Decentralized Health Record contract\ncontract DecentralizedRecords {\n    \n    // TODO:\n    // Put all methods from doctor, patient, service, etc contracts into here\n    // move testing to new files, just change around the syntax\n    // shouldn't be too hard\n\n}\n",
   "sourcePath": "/Users/kevincai/Desktop/UCL/Dartmouth/Classes/SeniorDesignAndImplementationProject/Ok/decentralized-health-blockchain/contracts/DecentralizedRecords.sol",
   "ast": {
     "absolutePath": "project:/contracts/DecentralizedRecords.sol",
     "exportedSymbols": {
       "DecentralizedRecords": [
-        19
+        2
       ]
     },
-    "id": 20,
+    "id": 3,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 18,
+        "id": 1,
         "literals": [
           "solidity",
           ">=",
@@ -30,7 +30,7 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:32:1"
+        "src": "0:32:0"
       },
       {
         "baseContracts": [],
@@ -38,25 +38,25 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 19,
+        "id": 2,
         "linearizedBaseContracts": [
-          19
+          2
         ],
         "name": "DecentralizedRecords",
         "nodeType": "ContractDefinition",
         "nodes": [],
-        "scope": 20,
-        "src": "110:223:1"
+        "scope": 3,
+        "src": "110:223:0"
       }
     ],
-    "src": "0:334:1"
+    "src": "0:334:0"
   },
   "legacyAST": {
     "attributes": {
       "absolutePath": "project:/contracts/DecentralizedRecords.sol",
       "exportedSymbols": {
         "DecentralizedRecords": [
-          19
+          2
         ]
       }
     },
@@ -73,9 +73,9 @@
             ".0"
           ]
         },
-        "id": 18,
+        "id": 1,
         "name": "PragmaDirective",
-        "src": "0:32:1"
+        "src": "0:32:0"
       },
       {
         "attributes": {
@@ -89,22 +89,22 @@
           "documentation": null,
           "fullyImplemented": true,
           "linearizedBaseContracts": [
-            19
+            2
           ],
           "name": "DecentralizedRecords",
           "nodes": [
             null
           ],
-          "scope": 20
+          "scope": 3
         },
-        "id": 19,
+        "id": 2,
         "name": "ContractDefinition",
-        "src": "110:223:1"
+        "src": "110:223:0"
       }
     ],
-    "id": 20,
+    "id": 3,
     "name": "SourceUnit",
-    "src": "0:334:1"
+    "src": "0:334:0"
   },
   "compiler": {
     "name": "solc",
@@ -112,7 +112,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.3",
-  "updatedAt": "2021-11-08T06:19:51.537Z",
+  "updatedAt": "2021-11-08T06:32:48.785Z",
   "devdoc": {
     "methods": {}
   },
