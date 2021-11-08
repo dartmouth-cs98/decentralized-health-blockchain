@@ -9,7 +9,7 @@ contract('Doctor', (accounts) => {
     const doctor1 = await doctorInstance.signupDoctor('Dionysios Kotsonis', "MGH Boston");
     // 
     console.log("======================");
-    console.log(typeof(accounts[0]));
+    console.log(doctor1[0]);
     assert.equal(doctor1.receipt.from.toUpperCase(), accounts[0].toUpperCase());
 
 
