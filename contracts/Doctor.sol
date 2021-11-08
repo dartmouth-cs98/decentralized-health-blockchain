@@ -22,9 +22,9 @@ contract Doctor {
     }
 
     // getter function for doctor's information
-    function getDoctorInfo() public view checkDoctor(msg.sender) returns(string memory, address[] memory) {
+    function getDoctorInfo() public view checkDoctor(msg.sender) returns(string memory, address[] memory, address, string memory) {
         doctor memory d = doctors[msg.sender];
-        return (d.name, d.patient_list);
+        return (d.name, d.patient_list, d.addr, d.clinic);
     }
 
     // Create a new doctor method

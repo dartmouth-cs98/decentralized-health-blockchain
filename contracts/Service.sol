@@ -42,6 +42,16 @@ contract Service is Doctor, Patient, File {
         patientToFile[_patient_addr][_file_hash] = file_pos;
     }
 
+    
+    // method to grant a doctor access to a patient's record
+    function checkName(address _doctor_address) public view returns(string memory) {
+        // get struct for patient and doctor
+        // patient storage p = patients[msg.sender];
+        doctor storage d = doctors[_doctor_address];
+        
+        return d.name;
+    }
+
     // method to grant a doctor access to a patient's record
     function grantDoctorAccess(address _doctor_address) public checkPatient(msg.sender) checkDoctor(msg.sender) {
         // get struct for patient and doctor
