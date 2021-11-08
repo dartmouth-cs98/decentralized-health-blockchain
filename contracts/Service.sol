@@ -152,19 +152,19 @@ contract Service {
     }
 
     // add a file to a patient's list
-    function addFile(string memory _file_name, string memory _file_type, bytes32 _file_hash, address _patient_addr, string memory _contents) public checkDoctor(msg.sender) {
-        
+    function addFile(string memory _file_name, string memory _file_type, address _patient_addr, string memory _contents) public checkDoctor(msg.sender) {
+        bytes32 file_hash = keccak256(abi.encode(_contents));
         // get the patient
         patient storage pat = patients[_patient_addr];
 
         // make sure the file doesn't already exist
-        require(patientToFile[_patient_addr][_file_hash] < 1);
+        require(patientToFile[_patient_addr][file_hash] < 1);
       
         // add this file to the file hash dict and the patient's file list
-        fileHashDict[_file_hash] = file({file_name:_file_name, record_type:_file_type,uploader:msg.sender,contents:_contents});
-        uint file_pos = pat.files.push(_file_hash);
+        fileHashDict[file_hash] = file({file_name:_file_name, record_type:_file_type,uploader:msg.sender,contents:_contents});
+        uint file_pos = pat.files.push(file_hash);
         // add the position in the file list to patientToFile mapping (avoid duplicates in future)
-        patientToFile[_patient_addr][_file_hash] = file_pos;
+        patientToFile[_patient_addr][file_hash] = file_pos;
     }
 
     // method to grant a doctor access to a patient's record
