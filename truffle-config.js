@@ -1,3 +1,13 @@
+const path = require("path");
+require('dotenv').config();
+const HDWalletProvider = require("@truffle/hdwallet-provider");
+const { API_URL, MNEMONIC } = process.env;
+
+const basename = path.basename(__dirname);
+const dir = __dirname.split(path.sep);
+dir.pop();
+const parentDir = dir.join('/');
+
 module.exports = {
   // Uncommenting the defaults below 
   // provides for an easier quick-start with Ganache.
@@ -38,4 +48,20 @@ module.exports = {
     //   }
     // }
   // }
+
+  contracts_build_directory: path.join(parentDir, "Decentralized-Health-Frontend/src/contracts"),
+  networks: {
+    development: {
+      host: "127.0.0.1",
+      port: 9545,
+      network_id: "*"
+    },
+    ropsten: {
+      provider: function() {
+        return new HDWalletProvider(MNEMONIC, API_URL)
+      },
+      network_id: 3,
+      gas: 8000000 //8M is the max
+    }
+  }
 };
