@@ -167,7 +167,7 @@ contract Service {
     }
 
     // method to grant a doctor access to a patient's record
-    function grantDoctorAccess(address _doctor_address) public checkPatient(msg.sender) checkDoctor(msg.sender) {
+    function grantDoctorAccess(address _doctor_address) public checkPatient(msg.sender) checkDoctor(_doctor_address) {
         // get struct for patient and doctor
         patient storage p = patients[msg.sender];
         doctor storage d = doctors[_doctor_address];
