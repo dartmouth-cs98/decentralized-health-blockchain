@@ -1,4 +1,5 @@
-pragma solidity >=0.4.25 <0.7.0;
+// pragma solidity >=0.5.16 <0.9.0;
+pragma experimental ABIEncoderV2;
 
 // Service contract, combines patient, doctor, file contracts
 // and handles higher-level functionality
@@ -45,13 +46,14 @@ contract Service {
     // check address is a valid doctor
     modifier checkDoctor(address addr) {
         doctor memory d = doctors[addr];
-        require(d.addr > address(0x0));
+        require(d.addr > address(0x0), "doctor is not valid");
         _;
     }
 
     // getter function for doctor's information
     function getDoctorInfo() public view checkDoctor(msg.sender) returns(string memory, address[] memory, address) {
         doctor memory d = doctors[msg.sender];
+        require((d.addr > address(0x0)), "doctor does not exist");
         return (d.name, d.patient_list, d.addr);
     }
 
@@ -60,9 +62,9 @@ contract Service {
         
         // get doctor struct, make sure the name, clinic, and address exist
         doctor memory d = doctors[msg.sender];
-        require(keccak256(abi.encodePacked(_name)) != keccak256(""));
-        require(keccak256(abi.encodePacked(_clinic)) != keccak256(""));
-        require(!(d.addr > address(0x0)));
+        require(keccak256(abi.encodePacked(_name)) != keccak256(""), "no name");
+        require(keccak256(abi.encodePacked(_clinic)) != keccak256(""), "no clinic");
+        require(!(d.addr > address(0x0)), "doctor exists");
 
         // create doctor structure, return saved info
         doctors[msg.sender] = doctor({name:_name, clinic:_clinic, addr:msg.sender, patient_list:new address[](0)});
@@ -91,12 +93,12 @@ contract Service {
     // make sure a file actually exists
     modifier checkFile(bytes32 file_hash) {
         bytes memory file_check = bytes(fileHashDict[file_hash].file_name);
-        require(file_check.length > 0);
+        require(file_check.length > 0, "file does not exist");
         _;
     }
 
     // given a file hash, get the file's name, type, and uploader
-    function getFileInfo(bytes32 file_hash) internal view checkFile(file_hash) returns(file memory) {
+    function getFileInfo(bytes32 file_hash) public view checkFile(file_hash) returns(file memory) {
         return fileHashDict[file_hash];
     }
 
@@ -104,7 +106,7 @@ contract Service {
     // check that a given patient actually exists
     modifier checkPatient(address addr) {
         patient memory p = patients[addr];
-        require(p.addr > address(0x0));
+        require(p.addr > address(0x0), "check patient error");
         _;
     }
 
@@ -119,11 +121,11 @@ contract Service {
         // store msg.sender as a patient in memory
         patient memory p = patients[msg.sender];
         // make sure a patient with this addr doesn't already exist
-        require(!(p.addr > address(0x0)));
+        require(!(p.addr > address(0x0)), "patient with this address already exists");
 
         // check to make sure the patient has a valid name and age
-        require(keccak256(abi.encodePacked(_name)) != keccak256(""));
-        require((_age > 0) && (_age < 120));
+        require(keccak256(abi.encodePacked(_name)) != keccak256(""), "patient name not valid");
+        require((_age > 0) && (_age < 120), "patient age must be between 0 and 120");
 
         // add to patient dict
         patients[msg.sender] = patient({name:_name,age:_age,addr:msg.sender,files:new bytes32[](0),doctor_list:new address[](0)});
@@ -143,7 +145,7 @@ contract Service {
 
     // make sure that the sender is the owner
     modifier onlyOwner() {
-        require(msg.sender == owner);
+        require(msg.sender == owner, "sender is not contract owner");
         _;
     }
 
@@ -157,11 +159,12 @@ contract Service {
         bytes32 file_hash = keccak256(abi.encode(_contents));
         patient storage p = patients[_patient_addr];
 
-        require(patientToFile[_patient_addr][file_hash] < 1);
+        require(patientToFile[_patient_addr][file_hash] < 1, "file hash error");
 
         // add this file to the file hash dict and the patient's file list
         fileHashDict[file_hash] = file({file_name:_file_name, record_type:_file_type,uploader:msg.sender,contents:_contents});
-        uint file_pos = p.files.push(file_hash);
+        p.files.push(file_hash);
+        uint file_pos = p.files.length;
         // add the position in the file list to patientToFile mapping (avoid duplicates in the future)
         patientToFile[_patient_addr][file_hash] = file_pos;
     }
@@ -172,13 +175,15 @@ contract Service {
         patient storage p = patients[msg.sender];
         doctor storage d = doctors[_doctor_address];
         // check doctor does not already have access
-        require(patientToDoctor[msg.sender][_doctor_address] < 1);// this means doctor already been access
+        require(patientToDoctor[msg.sender][_doctor_address] < 1, "doctor already has access");// this means doctor already been access
         // get the index of doctor's position in patient's doctor_list
-        uint idx1 = p.doctor_list.push(_doctor_address);// new length of array
+        p.doctor_list.push(_doctor_address);// new length of array
+        uint idx1 = p.doctor_list.length;
         // add doctor to patient's doctor list
         patientToDoctor[msg.sender][_doctor_address] = idx1;
         // add patient to doctor's patient list and to the doctortopatient mapping
-        uint idx2 = d.patient_list.push(msg.sender);
+        d.patient_list.push(msg.sender);
+        uint idx2 = d.patient_list.length;
         doctorToPatient[_doctor_address][msg.sender] = idx2;
     }
 
@@ -189,7 +194,7 @@ contract Service {
         patient memory p = patients[_patient_requested];
 
         // make sure the patient actually exists in this doctor's care circle
-        require(patientToDoctor[_patient_requested][msg.sender] > 0);
+        require(patientToDoctor[_patient_requested][msg.sender] > 0, "patient is not in doctor's care circle");
 
         // return the patient's name, age, and files
         return (p.name, p.age, p.files);
@@ -202,7 +207,7 @@ contract Service {
         doctor memory d = doctors[_doctor_requested];
 
         // make sure the doctor actually exists
-        require(doctorToPatient[_doctor_requested][msg.sender] > 0);
+        require(doctorToPatient[_doctor_requested][msg.sender] > 0, "doctor does not exist (get doctor for patient)");
 
         return (d.name, d.clinic);
     }
