@@ -154,7 +154,7 @@ contract Service {
     }
 
     // add a file to a patient's list
-    function addFile(string memory _file_name, string memory _file_type, address _patient_addr, string memory _contents) public checkPatient(msg.sender) {
+    function addFile(string memory _file_name, string memory _file_type, address _patient_addr, string memory _contents) public checkPatient(_patient_addr) {
         
         bytes32 file_hash = keccak256(abi.encode(_contents));
         patient storage p = patients[_patient_addr];
