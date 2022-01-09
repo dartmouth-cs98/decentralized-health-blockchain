@@ -15,19 +15,28 @@ contract Service {
     mapping (address => mapping (address => uint)) internal patientToDoctor; // dictionary mapping patient to doctor
     mapping (address => mapping (bytes32 => uint)) internal patientToFile; // dictionary mapping patient to files
 
+    /***** Main Structures *****/
+
     // Doctor struct
     struct doctor {
+        // doctor name
         string name;
+        // clinic/practice name
         string clinic;
+        // doctor wallet address
         address addr;
+        // list of active patients
         address[] patient_list;
     }
 
     // File struct
     struct file {
         string file_name;
+        // type of record (i.e. blood test, etc)
         string record_type;
+        // wallet address of the doctor who uploaded it
         address uploader;
+        // file contents, currently stored as unencrypted string
         string contents;
     }
 
@@ -35,12 +44,13 @@ contract Service {
     struct patient {
         string name;
         uint8 age;
+        // wallet address
         address addr;
         bytes32[] files; // hashes of file that belong to this user for display purpose
         address[] doctor_list;
     }
 
-    // Doctor methods:
+    /***** Doctor Methods *****/
     
     // check address is a valid doctor
     modifier checkDoctor(address addr) {
@@ -52,7 +62,7 @@ contract Service {
     // getter function for doctor's information
     function getDoctorInfo() public view checkDoctor(msg.sender) returns(string memory, address[] memory, address) {
         doctor memory d = doctors[msg.sender];
-        return (d.name, d.patient_list, d.addr);
+        return (d.name, d.patient_list, d.addr, d.clinic);
     }
 
     // Create a new doctor method
@@ -69,7 +79,7 @@ contract Service {
         return (doctors[msg.sender].name, doctors[msg.sender].addr, doctors[msg.sender].patient_list, doctors[msg.sender].clinic);
     }
 
-    // File methods:
+    /***** File Methods *****/
 
     // method to test file contract
     function testFile(string memory _file_contents, string memory _file_name) public returns(bytes32, string memory){
@@ -100,7 +110,8 @@ contract Service {
         return fileHashDict[file_hash];
     }
 
-    // Patient methods
+    /***** Patient methods *****/
+
     // check that a given patient actually exists
     modifier checkPatient(address addr) {
         patient memory p = patients[addr];
@@ -131,7 +142,7 @@ contract Service {
     }
 
 
-    // Service methods
+    /***** Service Methods *****/
 
     // message sender
     address private owner;
@@ -147,6 +158,7 @@ contract Service {
         _;
     }
 
+    // return message sender for testing purposes
     function testService() public view returns(address){
         return msg.sender;
     }
@@ -157,6 +169,7 @@ contract Service {
         bytes32 file_hash = keccak256(abi.encode(_contents));
         patient storage p = patients[_patient_addr];
 
+        // make sure the file hash doesn't already exist
         require(patientToFile[_patient_addr][file_hash] < 1);
 
         // add this file to the file hash dict and the patient's file list
