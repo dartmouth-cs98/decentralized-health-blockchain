@@ -60,7 +60,7 @@ contract Service {
     }
 
     // getter function for doctor's information
-    function getDoctorInfo() public view checkDoctor(msg.sender) returns(string memory, address[] memory, address) {
+    function getDoctorInfo() public view checkDoctor(msg.sender) returns(string memory, address[] memory, address, string memory) {
         doctor memory d = doctors[msg.sender];
         return (d.name, d.patient_list, d.addr, d.clinic);
     }
@@ -185,7 +185,7 @@ contract Service {
         patient storage p = patients[msg.sender];
         doctor storage d = doctors[_doctor_address];
         // check doctor does not already have access
-        require(patientToDoctor[msg.sender][_doctor_address] < 1);// this means doctor already been access
+        require(patientToDoctor[msg.sender][_doctor_address] < 1);
         // get the index of doctor's position in patient's doctor_list
         uint idx1 = p.doctor_list.push(_doctor_address);// new length of array
         // add doctor to patient's doctor list
@@ -193,6 +193,33 @@ contract Service {
         // add patient to doctor's patient list and to the doctortopatient mapping
         uint idx2 = d.patient_list.push(msg.sender);
         doctorToPatient[_doctor_address][msg.sender] = idx2;
+    }
+
+    // method to revoke a doctor's access to a patient's record
+    function revokeDoctorAccess(address _doctor_address) public checkPatient(msg.sender) checkDoctor(_doctor_address) {
+
+        // consideration: we need to make sure that if we delete an element in the array, we replace it with something else
+        // maybe keep track of deleted indices and then repopulate them with future doctors
+
+        // get the patient and doctor structs
+        patient storage p = patients[msg.sender];
+        doctor storage d = doctors[_doctor_address];
+
+        // make sure this doctor has been given access already
+        require(patientToDoctor[msg.sender][_doctor_address] > 0);
+        require(doctorToPatient[_doctor_address][msg.sender] > 0);
+
+        // get the current index of the doctor in the doctor list
+        uint idx1 = patientToDoctor[msg.sender][_doctor_address];
+        // remove the element at that index, and update the doctor's index
+        delete p.doctor_list[idx1]; // THIS IS GIVING ME AN ERROR, NEED TO FIGURE OUT DELETION
+        patientToDoctor[msg.sender][_doctor_address] = 0;
+
+        // get the current index of the patient in the doctor's patient list
+        uint idx2 = doctorToPatient[_doctor_address][msg.sender];
+        // remove the patient from the doctor's list and update the index
+        delete d.patient_list[idx2];
+        doctorToPatient[msg.sender][_doctor_address] = 0;
     }
 
     // function to get patient info (a doctor requests)

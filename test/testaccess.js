@@ -3,7 +3,7 @@ const Service = artifacts.require("Service");
 contract('TestAccess', (accounts) => {
 
     // create doctor contract
-    it('creates new service contract, creates doctor and patient, and tests test grantDoctorAccess', async () => {
+    it('creates new service contract, creates doctor and patient, and tests grantDoctorAccess and revokeDoctorAccess', async () => {
         // Wait for the contract to be deployed
         const serviceInstance = await Service.deployed();
         
@@ -34,6 +34,16 @@ contract('TestAccess', (accounts) => {
 
         // check that the doctor's address was added to the patient's doctor list
         assert.equal(p1[3][0], d[2]);
+
+        // revoke access and make sure the doctor and patient lists are both empty
+        const y = await serviceInstance.revokeDoctorAccess(d[2])
+        const doct = await serviceInstance.getDoctorInfo();
+        const pat = await serviceInstance.getPatientInfo();
+
+        console.log("doctor:");
+        console.log(doct);
+        console.log("patient:");
+        console.log(pat);
 
     });
 });
