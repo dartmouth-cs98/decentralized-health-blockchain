@@ -28,9 +28,17 @@ contract('TestAccess', (accounts) => {
         const x = await serviceInstance.grantDoctorAccess(d[2]);
 
         const p1 = await serviceInstance.getPatientInfo();
-        console.log("New patient structure with doctor access:")
+        console.log("New patient structure with doctor access:");
         console.log(p1);
-        console.log(p1[3])
+        console.log(p1[3]);
+
+        const av = await serviceInstance.testAvailableIndices();
+        console.log("Available indices: ");
+        console.log(av[0]);
+
+        const rev = await serviceInstance.revokeDoctorAccess(d[2]);
+        const av1 = await serviceInstance.testAvailableIndices();
+        console.log(av1);
 
         // check that the doctor's address was added to the patient's doctor list
         assert.equal(p1[3][0], d[2]);

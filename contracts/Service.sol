@@ -48,6 +48,7 @@ contract Service {
         address addr;
         bytes32[] files; // hashes of file that belong to this user for display purpose
         address[] doctor_list;
+        uint[] available_indices; // indices of deleted doctors in the doctor list
     }
 
     /***** Doctor Methods *****/
@@ -120,9 +121,9 @@ contract Service {
     }
 
     // get info for a given patient (name, age, files, list of whitelisted doctors)
-    function getPatientInfo() public view checkPatient(msg.sender) returns(string memory, uint8, bytes32[] memory, address[] memory) {
+    function getPatientInfo() public view checkPatient(msg.sender) returns(string memory, uint8, bytes32[] memory, address[] memory, uint[] memory) {
         patient memory p = patients[msg.sender];
-        return (p.name, p.age, p.files, p.doctor_list);
+        return (p.name, p.age, p.files, p.doctor_list, p.available_indices);
     }
 
     // add a new patient
@@ -137,7 +138,7 @@ contract Service {
         require((_age > 0) && (_age < 120));
 
         // add to patient dict
-        patients[msg.sender] = patient({name:_name,age:_age,addr:msg.sender,files:new bytes32[](0),doctor_list:new address[](0)});
+        patients[msg.sender] = patient({name:_name,age:_age,addr:msg.sender,files:new bytes32[](0),doctor_list:new address[](0), available_indices:new uint[](0)});
         return (patients[msg.sender].name, patients[msg.sender].age, patients[msg.sender].addr, patients[msg.sender].files, patients[msg.sender].doctor_list);
     }
 
@@ -179,6 +180,13 @@ contract Service {
         patientToFile[_patient_addr][file_hash] = file_pos;
     }
 
+    function testAvailableIndices() public checkPatient(msg.sender) returns(uint[] memory) {
+
+        patient storage p = patients[msg.sender];
+        return (p.available_indices);
+
+    }
+
     // method to grant a doctor access to a patient's record
     function grantDoctorAccess(address _doctor_address) public checkPatient(msg.sender) checkDoctor(_doctor_address) {
         // get struct for patient and doctor
@@ -186,6 +194,12 @@ contract Service {
         doctor storage d = doctors[_doctor_address];
         // check doctor does not already have access
         require(patientToDoctor[msg.sender][_doctor_address] < 1);
+
+        // // check if there are available indices
+        // if p.available_indices.length > 0:
+
+
+
         // get the index of doctor's position in patient's doctor_list
         uint idx1 = p.doctor_list.push(_doctor_address);// new length of array
         // add doctor to patient's doctor list
@@ -203,7 +217,7 @@ contract Service {
 
         // get the patient and doctor structs
         patient storage p = patients[msg.sender];
-        doctor storage d = doctors[_doctor_address];
+        // doctor storage d = doctors[_doctor_address];
 
         // make sure this doctor has been given access already
         require(patientToDoctor[msg.sender][_doctor_address] > 0);
@@ -211,15 +225,21 @@ contract Service {
 
         // get the current index of the doctor in the doctor list
         uint idx1 = patientToDoctor[msg.sender][_doctor_address];
-        // remove the element at that index, and update the doctor's index
-        delete p.doctor_list[idx1]; // THIS IS GIVING ME AN ERROR, NEED TO FIGURE OUT DELETION
-        patientToDoctor[msg.sender][_doctor_address] = 0;
 
-        // get the current index of the patient in the doctor's patient list
-        uint idx2 = doctorToPatient[_doctor_address][msg.sender];
-        // remove the patient from the doctor's list and update the index
-        delete d.patient_list[idx2];
-        doctorToPatient[msg.sender][_doctor_address] = 0;
+        // push it to the available indices dict
+        p.available_indices.push(idx1);
+        delete p.doctor_list[idx1];
+        // reset the available index
+
+        // remove the element at that index, and update the doctor's index
+        // delete p.doctor_list[idx1]; // THIS IS GIVING ME AN ERROR, NEED TO FIGURE OUT DELETION
+        // patientToDoctor[msg.sender][_doctor_address] = 0;
+
+        // // get the current index of the patient in the doctor's patient list
+        // uint idx2 = doctorToPatient[_doctor_address][msg.sender];
+        // // remove the patient from the doctor's list and update the index
+        // delete d.patient_list[idx2];
+        // doctorToPatient[msg.sender][_doctor_address] = 0;
     }
 
     // function to get patient info (a doctor requests)
