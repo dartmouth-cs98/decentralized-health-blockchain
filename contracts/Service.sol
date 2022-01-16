@@ -27,6 +27,8 @@ contract Service {
         address addr;
         // list of active patients
         address[] patient_list;
+        // list of available indices for patients (that revoked access)
+        uint[] available_indices;
     }
 
     // File struct
@@ -76,7 +78,7 @@ contract Service {
         require(!(d.addr > address(0x0)));
 
         // create doctor structure, return saved info
-        doctors[msg.sender] = doctor({name:_name, clinic:_clinic, addr:msg.sender, patient_list:new address[](0)});
+        doctors[msg.sender] = doctor({name:_name, clinic:_clinic, addr:msg.sender, patient_list:new address[](0),available_indices:new uint[](0)});
         return (doctors[msg.sender].name, doctors[msg.sender].addr, doctors[msg.sender].patient_list, doctors[msg.sender].clinic);
     }
 
@@ -195,18 +197,45 @@ contract Service {
         // check doctor does not already have access
         require(patientToDoctor[msg.sender][_doctor_address] < 1);
 
-        // // check if there are available indices
-        // if p.available_indices.length > 0:
+        // check if there are available indices for the patient
+        if (p.available_indices.length > 0) {
 
+            // add to the first available index
+            uint idx = p.available_indices[0];
+            p.doctor_list[idx] = _doctor_address;
+            patientToDoctor[msg.sender][_doctor_address] = idx;
 
+            // reset indices (this may not work)
+            // p.available_indices = p.available_indices[1:];
+            
+        }
+        else {
 
-        // get the index of doctor's position in patient's doctor_list
-        uint idx1 = p.doctor_list.push(_doctor_address);// new length of array
-        // add doctor to patient's doctor list
-        patientToDoctor[msg.sender][_doctor_address] = idx1;
-        // add patient to doctor's patient list and to the doctortopatient mapping
-        uint idx2 = d.patient_list.push(msg.sender);
-        doctorToPatient[_doctor_address][msg.sender] = idx2;
+            // get the index of doctor's position in patient's doctor_list
+            uint idx1 = p.doctor_list.push(_doctor_address);// new length of array
+            // add doctor to patient's doctor list
+            patientToDoctor[msg.sender][_doctor_address] = idx1;
+        }
+
+        // check if there are available indices for the doctor
+        if (d.available_indices.length > 0) {
+
+            // add to the first available index
+            uint d_idx = d.available_indices[0];
+            d.patient_list[d_idx] = msg.sender;
+            doctorToPatient[_doctor_address][msg.sender] = d_idx;
+
+            // reset indices (this may not work)
+            // d.available_indices = d.available_indices[1:];
+            
+        }
+        else {
+
+            // get the index of doctor's position in patient's doctor_list
+            uint idx2 = d.patient_list.push(msg.sender);// new length of array
+            // add doctor to patient's doctor list
+            doctorToPatient[_doctor_address][msg.sender] = idx2;
+        }
     }
 
     // method to revoke a doctor's access to a patient's record
@@ -265,5 +294,11 @@ contract Service {
         require(doctorToPatient[_doctor_requested][msg.sender] > 0);
 
         return (d.name, d.clinic);
+    }
+
+    function checkThing() public returns (uint[] memory) {
+
+        uint[] memory a = new uint[](0);
+        return a;
     }
 }

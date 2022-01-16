@@ -36,22 +36,25 @@ contract('TestAccess', (accounts) => {
         console.log("Available indices: ");
         console.log(av[0]);
 
-        const rev = await serviceInstance.revokeDoctorAccess(d[2]);
-        const av1 = await serviceInstance.testAvailableIndices();
-        console.log(av1);
+        const atr = await serviceInstance.checkThing();
+        console.log(atr);
 
-        // check that the doctor's address was added to the patient's doctor list
-        assert.equal(p1[3][0], d[2]);
+        // const rev = await serviceInstance.revokeDoctorAccess(d[2]);
+        // const av1 = await serviceInstance.testAvailableIndices();
+        // console.log(av1);
 
-        // revoke access and make sure the doctor and patient lists are both empty
-        const y = await serviceInstance.revokeDoctorAccess(d[2])
-        const doct = await serviceInstance.getDoctorInfo();
-        const pat = await serviceInstance.getPatientInfo();
+        // // check that the doctor's address was added to the patient's doctor list
+        // assert.equal(p1[3][0], d[2]);
 
-        console.log("doctor:");
-        console.log(doct);
-        console.log("patient:");
-        console.log(pat);
+        // // revoke access and make sure the doctor and patient lists are both empty
+        // const y = await serviceInstance.revokeDoctorAccess(d[2])
+        // const doct = await serviceInstance.getDoctorInfo();
+        // const pat = await serviceInstance.getPatientInfo();
+
+        // console.log("doctor:");
+        // console.log(doct);
+        // console.log("patient:");
+        // console.log(pat);
 
     });
 });
