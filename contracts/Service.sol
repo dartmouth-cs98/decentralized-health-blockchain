@@ -1,5 +1,7 @@
 pragma solidity >=0.4.25 <0.7.0;
 
+/* TODO: CHANGE DELETED DOCTOR/PATIENT TO POINTER TO FIRST ELEMENT/EMPTY ADDRESS */
+
 // Service contract, combines patient, doctor, file contracts
 // and handles higher-level functionality
 contract Service {
@@ -44,6 +46,7 @@ contract Service {
     struct patient {
         string name;
         uint8 age;
+        // string date_of_birth; // change age to DOB?
         // wallet address
         address addr;
         bytes32[] files; // hashes of file that belong to this user for display purpose
@@ -60,7 +63,7 @@ contract Service {
     }
 
     // getter function for doctor's information
-    function getDoctorInfo() public view checkDoctor(msg.sender) returns(string memory, address[] memory, address) {
+    function getDoctorInfo() public view checkDoctor(msg.sender) returns(string memory, address[] memory, address, string memory) {
         doctor memory d = doctors[msg.sender];
         return (d.name, d.patient_list, d.addr, d.clinic);
     }
@@ -185,14 +188,34 @@ contract Service {
         patient storage p = patients[msg.sender];
         doctor storage d = doctors[_doctor_address];
         // check doctor does not already have access
-        require(patientToDoctor[msg.sender][_doctor_address] < 1);// this means doctor already been access
+        require(patientToDoctor[msg.sender][_doctor_address] < 1);
+            
         // get the index of doctor's position in patient's doctor_list
         uint idx1 = p.doctor_list.push(_doctor_address);// new length of array
         // add doctor to patient's doctor list
         patientToDoctor[msg.sender][_doctor_address] = idx1;
-        // add patient to doctor's patient list and to the doctortopatient mapping
-        uint idx2 = d.patient_list.push(msg.sender);
+
+        // get the index of doctor's position in patient's doctor_list
+        uint idx2 = d.patient_list.push(msg.sender);// new length of array
+        // add doctor to patient's doctor list
         doctorToPatient[_doctor_address][msg.sender] = idx2;
+    }
+
+    // method to revoke a doctor's access to a patient's record
+    function revokeDoctorAccess(address _doctor_address) public checkPatient(msg.sender) checkDoctor(_doctor_address) {
+
+        // get the patient and doctor structs
+        patient storage p = patients[msg.sender];
+        // doctor storage d = doctors[_doctor_address];
+
+        // make sure this doctor has been given access already
+        require(patientToDoctor[msg.sender][_doctor_address] > 0);
+        require(doctorToPatient[_doctor_address][msg.sender] > 0);
+
+        // change the pointer to address 0
+        patientToDoctor[msg.sender][_doctor_address] = 0;
+        doctorToPatient[_doctor_address][msg.sender] = 0;
+
     }
 
     // function to get patient info (a doctor requests)
@@ -218,5 +241,11 @@ contract Service {
         require(doctorToPatient[_doctor_requested][msg.sender] > 0);
 
         return (d.name, d.clinic);
+    }
+
+    function checkRevokeAccess(address _doctor) public returns (uint) {
+
+        uint a = patientToDoctor[msg.sender][_doctor];
+        return a;
     }
 }
