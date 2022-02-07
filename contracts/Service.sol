@@ -1,6 +1,8 @@
 // pragma solidity >=0.5.16 <0.9.0;
 pragma experimental ABIEncoderV2;
 
+/* TODO: CHANGE DELETED DOCTOR/PATIENT TO POINTER TO FIRST ELEMENT/EMPTY ADDRESS */
+
 // Service contract, combines patient, doctor, file contracts
 // and handles higher-level functionality
 contract Service {
@@ -16,19 +18,28 @@ contract Service {
     mapping (address => mapping (address => uint)) internal patientToDoctor; // dictionary mapping patient to doctor
     mapping (address => mapping (bytes32 => uint)) internal patientToFile; // dictionary mapping patient to files
 
+    /***** Main Structures *****/
+
     // Doctor struct
     struct doctor {
+        // doctor name
         string name;
+        // clinic/practice name
         string clinic;
+        // doctor wallet address
         address addr;
+        // list of active patients
         address[] patient_list;
     }
 
     // File struct
     struct file {
         string file_name;
+        // type of record (i.e. blood test, etc)
         string record_type;
+        // wallet address of the doctor who uploaded it
         address uploader;
+        // file contents, currently stored as unencrypted string
         string contents;
     }
 
@@ -36,12 +47,14 @@ contract Service {
     struct patient {
         string name;
         uint8 age;
+        // string date_of_birth; // change age to DOB?
+        // wallet address
         address addr;
         bytes32[] files; // hashes of file that belong to this user for display purpose
         address[] doctor_list;
     }
 
-    // Doctor methods:
+    /***** Doctor Methods *****/
     
     // check address is a valid doctor
     modifier checkDoctor(address addr) {
@@ -51,10 +64,10 @@ contract Service {
     }
 
     // getter function for doctor's information
-    function getDoctorInfo() public view checkDoctor(msg.sender) returns(string memory, address[] memory, address) {
+    function getDoctorInfo() public view checkDoctor(msg.sender) returns(string memory, address[] memory, address, string memory) {
         doctor memory d = doctors[msg.sender];
         require((d.addr > address(0x0)), "doctor does not exist");
-        return (d.name, d.patient_list, d.addr);
+        return (d.name, d.patient_list, d.addr, d.clinic);
     }
 
     // Create a new doctor method
@@ -71,7 +84,7 @@ contract Service {
         return (doctors[msg.sender].name, doctors[msg.sender].addr, doctors[msg.sender].patient_list, doctors[msg.sender].clinic);
     }
 
-    // File methods:
+    /***** File Methods *****/
 
     // method to test file contract
     function testFile(string memory _file_contents, string memory _file_name) public returns(bytes32, string memory){
@@ -102,7 +115,8 @@ contract Service {
         return fileHashDict[file_hash];
     }
 
-    // Patient methods
+    /***** Patient methods *****/
+
     // check that a given patient actually exists
     modifier checkPatient(address addr) {
         patient memory p = patients[addr];
@@ -133,7 +147,7 @@ contract Service {
     }
 
 
-    // Service methods
+    /***** Service Methods *****/
 
     // message sender
     address private owner;
@@ -149,6 +163,7 @@ contract Service {
         _;
     }
 
+    // return message sender for testing purposes
     function testService() public view returns(address){
         return msg.sender;
     }
@@ -187,6 +202,23 @@ contract Service {
         doctorToPatient[_doctor_address][msg.sender] = idx2;
     }
 
+    // method to revoke a doctor's access to a patient's record
+    function revokeDoctorAccess(address _doctor_address) public checkPatient(msg.sender) checkDoctor(_doctor_address) {
+
+        // get the patient and doctor structs
+        patient storage p = patients[msg.sender];
+        // doctor storage d = doctors[_doctor_address];
+
+        // make sure this doctor has been given access already
+        require(patientToDoctor[msg.sender][_doctor_address] > 0);
+        require(doctorToPatient[_doctor_address][msg.sender] > 0);
+
+        // change the pointer to address 0
+        patientToDoctor[msg.sender][_doctor_address] = 0;
+        doctorToPatient[_doctor_address][msg.sender] = 0;
+
+    }
+
     // function to get patient info (a doctor requests)
     function getPatientInfoForDoctor(address _patient_requested) public view checkPatient(_patient_requested) checkDoctor(msg.sender) returns(string memory, uint8, bytes32[] memory){
         
@@ -210,5 +242,11 @@ contract Service {
         require(doctorToPatient[_doctor_requested][msg.sender] > 0, "doctor does not exist (get doctor for patient)");
 
         return (d.name, d.clinic);
+    }
+
+    function checkRevokeAccess(address _doctor) public returns (uint) {
+
+        uint a = patientToDoctor[msg.sender][_doctor];
+        return a;
     }
 }
