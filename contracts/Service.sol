@@ -38,7 +38,9 @@ contract Service {
         // type of record (i.e. blood test, etc)
         string record_type;
         // wallet address of the doctor who uploaded it
-        address uploader;
+        address uploader_address;
+        // name of the doctor who uploaded it
+        string uploader_name;
         // file contents, currently stored as unencrypted string
         string contents;
     }
@@ -89,7 +91,7 @@ contract Service {
     // method to test file contract
     function testFile(string memory _file_contents, string memory _file_name) public returns(bytes32, string memory){
         bytes32 file_hash = keccak256(abi.encodePacked(_file_contents));
-        fileHashDict[file_hash] = file({file_name:_file_name,record_type:"blood test",uploader:address(0x0),contents:_file_contents});
+        fileHashDict[file_hash] = file({file_name:_file_name,record_type:"blood test",uploader_address:address(0x0),uploader_name:"Test Doctor",contents:_file_contents});
         return (file_hash, "Blood Test 1");
     }
 
@@ -110,7 +112,7 @@ contract Service {
         _;
     }
 
-    // given a file hash, get the file's name, type, and uploader
+    // given a file hash, get the file's name, type, and uploader's name and address
     function getFileInfo(bytes32 file_hash) public view checkFile(file_hash) returns(file memory) {
         return fileHashDict[file_hash];
     }
@@ -120,7 +122,7 @@ contract Service {
     // check that a given patient actually exists
     modifier checkPatient(address addr) {
         patient memory p = patients[addr];
-        require(p.addr > address(0x0), "check patient error");
+        require(p.addr > address(0x0), "patient does not exist");
         _;
     }
 
@@ -176,8 +178,11 @@ contract Service {
 
         require(patientToFile[_patient_addr][file_hash] < 1, "file hash error");
 
+        doctor memory d = doctors[msg.sender];
+        require((d.addr > address(0x0)), "doctor does not exist");
+
         // add this file to the file hash dict and the patient's file list
-        fileHashDict[file_hash] = file({file_name:_file_name, record_type:_file_type,uploader:msg.sender,contents:_contents});
+        fileHashDict[file_hash] = file({file_name:_file_name, record_type:_file_type, uploader_address:msg.sender, uploader_name:d.name, contents:_contents});
         p.files.push(file_hash);
         uint file_pos = p.files.length;
         // add the position in the file list to patientToFile mapping (avoid duplicates in the future)
@@ -206,12 +211,12 @@ contract Service {
     function revokeDoctorAccess(address _doctor_address) public checkPatient(msg.sender) checkDoctor(_doctor_address) {
 
         // get the patient and doctor structs
-        patient storage p = patients[msg.sender];
+        // patient storage p = patients[msg.sender];
         // doctor storage d = doctors[_doctor_address];
 
         // make sure this doctor has been given access already
-        require(patientToDoctor[msg.sender][_doctor_address] > 0);
-        require(doctorToPatient[_doctor_address][msg.sender] > 0);
+        require(patientToDoctor[msg.sender][_doctor_address] > 0, "doctor not in patient's list");
+        require(doctorToPatient[_doctor_address][msg.sender] > 0, "patient not in doctor's list");
 
         // change the pointer to address 0
         patientToDoctor[msg.sender][_doctor_address] = 0;
@@ -244,7 +249,7 @@ contract Service {
         return (d.name, d.clinic);
     }
 
-    function checkRevokeAccess(address _doctor) public returns (uint) {
+    function checkRevokeAccess(address _doctor) public view returns (uint) {
 
         uint a = patientToDoctor[msg.sender][_doctor];
         return a;

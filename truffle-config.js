@@ -50,11 +50,22 @@ module.exports = {
   // }
 
   contracts_build_directory: path.join(parentDir, "Decentralized-Health-Frontend/src/contracts"),
+  compilers: {
+    solc: {
+      settings: {
+        optimizer: {
+          enabled: true,
+          runs: 3000
+        }
+      }
+    }
+  },
   networks: {
     development: {
       host: "127.0.0.1",
       port: 9545,
-      network_id: "*"
+      network_id: "*",
+      // gas: 0x1fffffffffffff
     },
     ropsten: {
       provider: function() {
