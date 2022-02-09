@@ -37,6 +37,11 @@ contract('TestAccess', (accounts) => {
         const atr = await serviceInstance.checkRevokeAccess.call(d[2]);
         console.log("PatientToDoctor after revoking access")
         console.log(atr);
+
+        // check the doctor from this patient
+        const doct = await serviceInstance.getDoctorInfoForPatient(d[2])
+        console.log(doct)
+
         const x1 = await serviceInstance.grantDoctorAccess(d[2]);
         const p2 = await serviceInstance.getPatientInfo();
         console.log(p2)

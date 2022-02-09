@@ -243,8 +243,12 @@ contract Service {
         // get the doctor from the doctors list
         doctor memory d = doctors[_doctor_requested];
 
+        if (doctorToPatient[_doctor_requested][msg.sender] == 0){
+            return("doctor does not exist", "N/A");
+        }
+
         // make sure the doctor actually exists
-        require(doctorToPatient[_doctor_requested][msg.sender] > 0, "doctor does not exist (get doctor for patient)");
+        // require(doctorToPatient[_doctor_requested][msg.sender] > 0, "doctor does not exist (get doctor for patient)");
 
         return (d.name, d.clinic);
     }
