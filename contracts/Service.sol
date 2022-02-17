@@ -43,6 +43,8 @@ contract Service {
         string uploader_name;
         // file contents, currently stored as unencrypted string
         string contents;
+        // date the file was uploaded
+        string date_uploaded;
     }
 
     // Patient struct
@@ -91,7 +93,7 @@ contract Service {
     // method to test file contract
     function testFile(string memory _file_contents, string memory _file_name) public returns(bytes32, string memory){
         bytes32 file_hash = keccak256(abi.encodePacked(_file_contents));
-        fileHashDict[file_hash] = file({file_name:_file_name,record_type:"blood test",uploader_address:address(0x0),uploader_name:"Test Doctor",contents:_file_contents});
+        fileHashDict[file_hash] = file({file_name:_file_name,record_type:"blood test",uploader_address:address(0x0),uploader_name:"Test Doctor",contents:_file_contents, date_uploaded:"today"});
         return (file_hash, "Blood Test 1");
     }
 
@@ -171,7 +173,7 @@ contract Service {
     }
 
     // add a file to a patient's list
-    function addFile(string memory _file_name, string memory _file_type, address _patient_addr, string memory _contents) public checkPatient(_patient_addr) {
+    function addFile(string memory _file_name, string memory _file_type, address _patient_addr, string memory _contents, string memory _date_uploaded) public checkPatient(_patient_addr) {
         
         bytes32 file_hash = keccak256(abi.encode(_contents));
         patient storage p = patients[_patient_addr];
@@ -182,7 +184,7 @@ contract Service {
         require((d.addr > address(0x0)), "doctor does not exist");
 
         // add this file to the file hash dict and the patient's file list
-        fileHashDict[file_hash] = file({file_name:_file_name, record_type:_file_type, uploader_address:msg.sender, uploader_name:d.name, contents:_contents});
+        fileHashDict[file_hash] = file({file_name:_file_name, record_type:_file_type, uploader_address:msg.sender, uploader_name:d.name, contents:_contents, date_uploaded:_date_uploaded});
         p.files.push(file_hash);
         uint file_pos = p.files.length;
         // add the position in the file list to patientToFile mapping (avoid duplicates in the future)
