@@ -50,8 +50,7 @@ contract Service {
     // Patient struct
     struct patient {
         string name;
-        uint8 age;
-        // string date_of_birth; // change age to DOB?
+        string dob;
         // wallet address
         address addr;
         bytes32[] files; // hashes of file that belong to this user for display purpose
@@ -128,26 +127,25 @@ contract Service {
         _;
     }
 
-    // get info for a given patient (name, age, files, list of whitelisted doctors)
-    function getPatientInfo() public view checkPatient(msg.sender) returns(string memory, uint8, bytes32[] memory, address[] memory) {
+    // get info for a given patient (name, dob, files, list of whitelisted doctors)
+    function getPatientInfo() public view checkPatient(msg.sender) returns(string memory, string memory, bytes32[] memory, address[] memory) {
         patient memory p = patients[msg.sender];
-        return (p.name, p.age, p.files, p.doctor_list);
+        return (p.name, p.dob, p.files, p.doctor_list);
     }
 
     // add a new patient
-    function signupPatient(string memory _name, uint8 _age) public returns(string memory, uint8, address, bytes32[] memory, address[] memory) {
+    function signupPatient(string memory _name, string memory _dob) public returns(string memory, string memory, address, bytes32[] memory, address[] memory) {
         // store msg.sender as a patient in memory
         patient memory p = patients[msg.sender];
         // make sure a patient with this addr doesn't already exist
         require(!(p.addr > address(0x0)), "patient with this address already exists");
 
-        // check to make sure the patient has a valid name and age
+        // check to make sure the patient has a valid name
         require(keccak256(abi.encodePacked(_name)) != keccak256(""), "patient name not valid");
-        require((_age > 0) && (_age < 120), "patient age must be between 0 and 120");
 
         // add to patient dict
-        patients[msg.sender] = patient({name:_name,age:_age,addr:msg.sender,files:new bytes32[](0),doctor_list:new address[](0)});
-        return (patients[msg.sender].name, patients[msg.sender].age, patients[msg.sender].addr, patients[msg.sender].files, patients[msg.sender].doctor_list);
+        patients[msg.sender] = patient({name:_name,dob:_dob,addr:msg.sender,files:new bytes32[](0),doctor_list:new address[](0)});
+        return (patients[msg.sender].name, patients[msg.sender].dob, patients[msg.sender].addr, patients[msg.sender].files, patients[msg.sender].doctor_list);
     }
 
 
@@ -227,7 +225,7 @@ contract Service {
     }
 
     // function to get patient info (a doctor requests)
-    function getPatientInfoForDoctor(address _patient_requested) public view checkPatient(_patient_requested) checkDoctor(msg.sender) returns(string memory, uint8, bytes32[] memory){
+    function getPatientInfoForDoctor(address _patient_requested) public view checkPatient(_patient_requested) checkDoctor(msg.sender) returns(string memory, string memory, bytes32[] memory){
         
         // get the patient from the patient list
         patient memory p = patients[_patient_requested];
@@ -236,7 +234,7 @@ contract Service {
         require(patientToDoctor[_patient_requested][msg.sender] > 0, "patient is not in doctor's care circle");
 
         // return the patient's name, age, and files
-        return (p.name, p.age, p.files);
+        return (p.name, p.dob, p.files);
     }
 
     // function to get doctor info (for a patient) -- will see how necessary this ends up being
