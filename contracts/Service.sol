@@ -30,6 +30,7 @@ contract Service {
         address addr;
         // list of active patients
         address[] patient_list;
+        string email;
     }
 
     // File struct
@@ -55,6 +56,7 @@ contract Service {
         address addr;
         bytes32[] files; // hashes of file that belong to this user for display purpose
         address[] doctor_list;
+        string email;
     }
 
     /***** Doctor Methods *****/
@@ -67,14 +69,14 @@ contract Service {
     }
 
     // getter function for doctor's information
-    function getDoctorInfo() public view checkDoctor(msg.sender) returns(string memory, address[] memory, address, string memory) {
+    function getDoctorInfo() public view checkDoctor(msg.sender) returns(string memory, address[] memory, address, string memory, string memory) {
         doctor memory d = doctors[msg.sender];
         require((d.addr > address(0x0)), "doctor does not exist");
-        return (d.name, d.patient_list, d.addr, d.clinic);
+        return (d.name, d.patient_list, d.addr, d.clinic, d.email);
     }
 
     // Create a new doctor method
-    function signupDoctor(string memory _name, string memory _clinic) public returns(string memory, address, address[] memory, string memory) {
+    function signupDoctor(string memory _name, string memory _clinic, string memory _email) public returns(string memory, address, address[] memory, string memory, string memory) {
         
         // get doctor struct, make sure the name, clinic, and address exist
         doctor memory d = doctors[msg.sender];
@@ -83,8 +85,8 @@ contract Service {
         require(!(d.addr > address(0x0)), "doctor exists");
 
         // create doctor structure, return saved info
-        doctors[msg.sender] = doctor({name:_name, clinic:_clinic, addr:msg.sender, patient_list:new address[](0)});
-        return (doctors[msg.sender].name, doctors[msg.sender].addr, doctors[msg.sender].patient_list, doctors[msg.sender].clinic);
+        doctors[msg.sender] = doctor({name:_name, clinic:_clinic, addr:msg.sender, patient_list:new address[](0), email:_email});
+        return (doctors[msg.sender].name, doctors[msg.sender].addr, doctors[msg.sender].patient_list, doctors[msg.sender].clinic, doctors[msg.sender].email);
     }
 
     /***** File Methods *****/
@@ -128,13 +130,13 @@ contract Service {
     }
 
     // get info for a given patient (name, dob, files, list of whitelisted doctors)
-    function getPatientInfo() public view checkPatient(msg.sender) returns(string memory, string memory, bytes32[] memory, address[] memory) {
+    function getPatientInfo() public view checkPatient(msg.sender) returns(string memory, string memory, bytes32[] memory, address[] memory, string memory) {
         patient memory p = patients[msg.sender];
-        return (p.name, p.dob, p.files, p.doctor_list);
+        return (p.name, p.dob, p.files, p.doctor_list, p.email);
     }
 
     // add a new patient
-    function signupPatient(string memory _name, string memory _dob) public returns(string memory, string memory, address, bytes32[] memory, address[] memory) {
+    function signupPatient(string memory _name, string memory _dob, string memory _email) public returns(string memory, string memory, address, bytes32[] memory, address[] memory, string memory) {
         // store msg.sender as a patient in memory
         patient memory p = patients[msg.sender];
         // make sure a patient with this addr doesn't already exist
@@ -144,8 +146,8 @@ contract Service {
         require(keccak256(abi.encodePacked(_name)) != keccak256(""), "patient name not valid");
 
         // add to patient dict
-        patients[msg.sender] = patient({name:_name,dob:_dob,addr:msg.sender,files:new bytes32[](0),doctor_list:new address[](0)});
-        return (patients[msg.sender].name, patients[msg.sender].dob, patients[msg.sender].addr, patients[msg.sender].files, patients[msg.sender].doctor_list);
+        patients[msg.sender] = patient({name:_name,dob:_dob,addr:msg.sender,files:new bytes32[](0),doctor_list:new address[](0), email: _email});
+        return (patients[msg.sender].name, patients[msg.sender].dob, patients[msg.sender].addr, patients[msg.sender].files, patients[msg.sender].doctor_list, patients[msg.sender].email);
     }
 
 
@@ -225,7 +227,7 @@ contract Service {
     }
 
     // function to get patient info (a doctor requests)
-    function getPatientInfoForDoctor(address _patient_requested) public view checkPatient(_patient_requested) checkDoctor(msg.sender) returns(string memory, string memory, bytes32[] memory){
+    function getPatientInfoForDoctor(address _patient_requested) public view checkPatient(_patient_requested) checkDoctor(msg.sender) returns(string memory, string memory, bytes32[] memory, string memory){
         
         // get the patient from the patient list
         patient memory p = patients[_patient_requested];
@@ -234,11 +236,11 @@ contract Service {
         require(patientToDoctor[_patient_requested][msg.sender] > 0, "patient is not in doctor's care circle");
 
         // return the patient's name, age, and files
-        return (p.name, p.dob, p.files);
+        return (p.name, p.dob, p.files, p.email);
     }
 
     // function to get doctor info (for a patient) -- will see how necessary this ends up being
-    function getDoctorInfoForPatient(address _doctor_requested) public view checkPatient(msg.sender) checkDoctor(_doctor_requested) returns(string memory, string memory){
+    function getDoctorInfoForPatient(address _doctor_requested) public view checkPatient(msg.sender) checkDoctor(_doctor_requested) returns(string memory, string memory, string memory){
         
         // get the doctor from the doctors list
         doctor memory d = doctors[_doctor_requested];
@@ -246,7 +248,7 @@ contract Service {
         // make sure the doctor actually exists
         require(doctorToPatient[_doctor_requested][msg.sender] > 0, "doctor does not exist (get doctor for patient)");
 
-        return (d.name, d.clinic);
+        return (d.name, d.clinic, d.email);
     }
 
     function checkRevokeAccess(address _doctor) public view returns (uint) {
